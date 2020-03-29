@@ -1,0 +1,22 @@
+/* Réseau bayésien décrit dans le livre */
+ReseauBayesien
+{
+  Cambriolage() : 0.001;
+  TremblementTerre() : 0.002;
+  Alarme(Cambriolage,TremblementTerre) : 0.001 0.29 0.94 0.95;
+  JeanAppelle(Alarme) : 0.05 0.90;
+  MarieAppelle(Alarme) : 0.01 0.70;
+}
+
+P(Cambriolage=Vrai) ;
+P(Cambriolage=Vrai | MarieAppelle=Vrai) ;
+P(Cambriolage=Vrai | MarieAppelle=Vrai, JeanAppelle=Vrai) ;
+P(Cambriolage=Vrai | MarieAppelle=Vrai, JeanAppelle=Vrai, TremblementTerre=Faux) ;
+P(Cambriolage=Vrai | MarieAppelle=Vrai, JeanAppelle=Vrai, Cambriolage=Vrai) ;
+P(MarieAppelle=Vrai| Alarme=Faux) ;
+P(Cambriolage=Vrai | MarieAppelle=Faux, JeanAppelle=Faux) ;
+P(Cambriolage=Faux | MarieAppelle=Vrai, JeanAppelle=Vrai) ;
+P(Alarme=Vrai,JeanAppelle=Vrai,MarieAppelle=Vrai,Cambriolage=Faux,TremblementTerre=false);
+P(MarieAppelle=Faux|Alarme=Vrai,JeanAppelle=Faux);
+P(MarieAppelle=Faux|Alarme=Vrai);
+
