@@ -31,10 +31,15 @@ public class ReseauBayesien {
         		}
         	}	
         }
+        if(nbMatchInterrogation==0) {
+        	System.out.println("TEST2");
+        }
         if(nbMatchConnu==0) {
+        	System.out.println("TEST1");
         	return 0.00;
         }
-        return nbMatchInterrogation / nbMatchConnu;
+       
+        return (double)nbMatchInterrogation / (double)nbMatchConnu;
     }
     private void evaluerVariableBool(VariableBool v) {
     	if(!v.evalue) {
@@ -74,7 +79,7 @@ public class ReseauBayesien {
     			System.out.println("variable not found");
     		}
     	}
-    	return false;
+    	return satisfait;
     }
     
     public boolean interrogationSatisfaite(Requete r) {
@@ -90,7 +95,7 @@ public class ReseauBayesien {
     			System.out.println("variable not found");
     		}
     	}
-    	return false;
+    	return satisfait;
     }
     
     protected Map<String, VariableBool>  variables = new TreeMap();
