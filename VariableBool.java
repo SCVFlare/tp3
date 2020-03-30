@@ -4,10 +4,18 @@
 */
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 public class VariableBool {
+    protected boolean evalue;
     
+    protected boolean value;
+    
+    
+    public void clear() {
+    	evalue=false;
+    }
     /** Nom de la variable. */
     protected String                nom;
     
@@ -26,4 +34,10 @@ public class VariableBool {
      */
     protected double[]              tableProbabilites;
 
+	@Override
+	public String toString() {
+		return "[nom=" + nom + ", dependances=" + dependances + ", tableProbabilites="
+				+ Arrays.toString(tableProbabilites) + "]";
+	}
+    
 }

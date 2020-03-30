@@ -4,6 +4,7 @@
 */
 import java.io.StreamTokenizer;
 import java.util.Map;
+import java.util.Random;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -13,9 +14,83 @@ public class ReseauBayesien {
     
     public double evaluerProbabilite(Requete requete)
     {
-        // À compléter.
-        System.err.println(requete);
-        return 0;
+    	System.out.println(requete);
+    	int nbMatchConnu=0;
+    	int nbMatchInterrogation=0;
+        for(int i=0;i<100;i++) {
+        	for(VariableBool v: variables.values()) {
+        		v.clear();
+        	}
+        	for(VariableBool v: variables.values()) {
+        		evaluerVariableBool(v);
+        	}
+        	if(connuSatisfaite(requete)) {
+        		nbMatchConnu++;
+        		if(interrogationSatisfaite(requete)) {
+        			nbMatchInterrogation++;
+        		}
+        	}	
+        }
+        if(nbMatchConnu==0) {
+        	return 0.00;
+        }
+        return nbMatchInterrogation / nbMatchConnu;
+    }
+    private void evaluerVariableBool(VariableBool v) {
+    	if(!v.evalue) {
+    		int i=0;
+    		for(String s:v.dependances) {
+    			try {
+    				VariableBool p = variables.get(s);
+    				i=i*2;
+    				evaluerVariableBool(p);
+    				if(p.value) {
+    					i++;
+    				}
+    			}
+    			catch(Exception e){
+    				System.out.println("variable not found");
+    			}
+    		
+    		}
+    		double prob=v.tableProbabilites[i];
+    		Random r = new Random();
+    		double randomValue = r.nextDouble();
+    		v.value=randomValue<prob;
+    		v.evalue=true;
+    	}
+    }
+    
+    public boolean connuSatisfaite(Requete r) {
+    	boolean satisfait=true;
+    	for(Expression e:r.connu) {
+    		try {
+    			VariableBool v= variables.get(e.variable);
+    			if(v.value!=e.valeurverite) {
+    				satisfait=false;
+    			}
+    		}
+    		catch(Exception exc) {
+    			System.out.println("variable not found");
+    		}
+    	}
+    	return false;
+    }
+    
+    public boolean interrogationSatisfaite(Requete r) {
+    	boolean satisfait=true;
+    	for(Expression e:r.interrogation) {
+    		try {
+    			VariableBool v= variables.get(e.variable);
+    			if(v.value!=e.valeurverite) {
+    				satisfait=false;
+    			}
+    		}
+    		catch(Exception exc) {
+    			System.out.println("variable not found");
+    		}
+    	}
+    	return false;
     }
     
     protected Map<String, VariableBool>  variables = new TreeMap();

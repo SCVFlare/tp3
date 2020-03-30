@@ -10,6 +10,8 @@ public class Requete {
     protected ArrayList<Expression>   interrogation = new ArrayList<Expression>();
     protected ArrayList<Expression>   connu = new ArrayList<Expression>();
     
+    
+    
     public static Requete lireRequete(StreamTokenizer in) throws Exception
     {
         Requete requete = new Requete();
