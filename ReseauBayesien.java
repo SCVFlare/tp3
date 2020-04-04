@@ -3,8 +3,13 @@
    http://ericbeaudry.uqam.ca/INF4230/tp3/
 */
 import java.io.StreamTokenizer;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -17,28 +22,24 @@ public class ReseauBayesien {
     	System.out.println(requete);
     	int nbMatchConnu=0;
     	int nbMatchInterrogation=0;
-        for(int i=0;i<100;i++) {
-        	for(VariableBool v: variables.values()) {
-        		v.clear();
+        for(int i=0;i<10;i++) {
+        	Collection<VariableBool> values= variables.values();
+        	Collections.sort((List<VariableBool>) values);
+        	for(VariableBool v: values) {
+        		setEvalue(v,false);
         	}
-        	for(VariableBool v: variables.values()) {
+        	for(VariableBool v: values) {
         		evaluerVariableBool(v);
         	}
-        	if(connuSatisfaite(requete)) {
+        	boolean cs=connuSatisfaite(requete);
+        	boolean is=interrogationSatisfaite(requete);
+        	if(cs) {
         		nbMatchConnu++;
-        		if(interrogationSatisfaite(requete)) {
+        		if(is) {
         			nbMatchInterrogation++;
         		}
         	}	
         }
-        if(nbMatchInterrogation==0) {
-        	System.out.println("TEST2");
-        }
-        if(nbMatchConnu==0) {
-        	System.out.println("TEST1");
-        	return 0.00;
-        }
-       
         return (double)nbMatchInterrogation / (double)nbMatchConnu;
     }
     private void evaluerVariableBool(VariableBool v) {
@@ -46,7 +47,7 @@ public class ReseauBayesien {
     		int i=0;
     		for(String s:v.dependances) {
     			try {
-    				VariableBool p = variables.get(s);
+    				VariableBool p = this.variables.get(s);
     				i=i*2;
     				evaluerVariableBool(p);
     				if(p.value) {
@@ -61,8 +62,9 @@ public class ReseauBayesien {
     		double prob=v.tableProbabilites[i];
     		Random r = new Random();
     		double randomValue = r.nextDouble();
-    		v.value=randomValue<prob;
-    		v.evalue=true;
+    		System.out.println(prob);
+    		setValue(v,randomValue<prob);
+    		setEvalue(v,true);
     	}
     }
     
@@ -70,7 +72,7 @@ public class ReseauBayesien {
     	boolean satisfait=true;
     	for(Expression e:r.connu) {
     		try {
-    			VariableBool v= variables.get(e.variable);
+    			VariableBool v= this.variables.get(e.variable);
     			if(v.value!=e.valeurverite) {
     				satisfait=false;
     			}
@@ -86,7 +88,7 @@ public class ReseauBayesien {
     	boolean satisfait=true;
     	for(Expression e:r.interrogation) {
     		try {
-    			VariableBool v= variables.get(e.variable);
+    			VariableBool v= this.variables.get(e.variable);
     			if(v.value!=e.valeurverite) {
     				satisfait=false;
     			}
@@ -100,6 +102,64 @@ public class ReseauBayesien {
     
     protected Map<String, VariableBool>  variables = new TreeMap();
     
+    protected int getProfondeur() {
+    	Set<VariableBool> racines = new HashSet<VariableBool>();
+    	for(VariableBool v: variables.values()) {
+    		profondeurMax(v,0);
+    	}
+    	int m=0;
+    	for(VariableBool v: variables.values()) {
+    		m=Math.max(m, v.profondeur);
+    	}
+    	return m;
+    	/*for(VariableBool v: variables.values()) {
+    		profondeurRec(v,m);
+    	}*/
+    }
+    
+    public void profondeurMax(VariableBool v,int max) {
+    	if(v.dependances.isEmpty()) {
+    		v.profondeur=Math.max(v.profondeur, max);
+    	}
+    	else {
+    		for(String s:v.dependances) {
+    			VariableBool v1=variables.get(s);
+    			profondeurMax(v1,1+max);
+    		}
+    	}
+    }
+    
+    /*public void profondeurRec(VariableBool v,int profondeur) {
+    	if(v.dependances.isEmpty()) {
+    		v.profondeur=pro;
+    	}
+    	else {
+    		for(String s:v.dependances) {
+    			VariableBool v1=variables.get(s);
+    			v1.profondeur=profondeur;
+    			profondeurRec(v,profondeur-1);
+    		}
+    	}
+    }*/
+	public void setEvalue(VariableBool v, boolean evalue) {
+		try {
+			this.variables.get(v.nom).evalue=evalue;
+		}
+		catch(Exception e){
+			System.out.println("variable not found");
+		}
+	}
+
+	public void setValue(VariableBool v, boolean value) {
+		try {
+			this.variables.get(v.nom).value=value;
+		}
+		catch(Exception e){
+			System.out.println("variable not found");
+		}
+	}
+
+	
     protected boolean verifierVariablesNonDefinies(){
         for(VariableBool v : variables.values())
             for(String dep : v.dependances)

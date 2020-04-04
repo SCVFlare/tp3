@@ -15,6 +15,7 @@ public class TP3 {
         while(in.nextToken() != StreamTokenizer.TT_EOF){
             in.pushBack();
             Requete requete = Requete.lireRequete(in);
+            System.out.println(reseaubayesien.getProfondeur());
             double p = reseaubayesien.evaluerProbabilite(requete);
             System.out.println("" + p);
         }

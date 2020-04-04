@@ -7,15 +7,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 
-public class VariableBool {
+public class VariableBool implements Comparable<VariableBool>{
     protected boolean evalue;
-    
+    protected int profondeur;
     protected boolean value;
     
     
-    public void clear() {
-    	evalue=false;
-    }
+
+
     /** Nom de la variable. */
     protected String                nom;
     
@@ -34,10 +33,19 @@ public class VariableBool {
      */
     protected double[]              tableProbabilites;
 
+
+
 	@Override
 	public String toString() {
-		return "[nom=" + nom + ", dependances=" + dependances + ", tableProbabilites="
-				+ Arrays.toString(tableProbabilites) + "]";
+		return "evalue=" + evalue + ", value=" + value + ", nom=" + nom + ", dependances=" + dependances
+				+ ", tableProbabilites=" + Arrays.toString(tableProbabilites);
 	}
+
+	@Override
+	public int compareTo(VariableBool o) {
+        return (this.profondeur - o.profondeur);
+    }
+
+	
     
 }
