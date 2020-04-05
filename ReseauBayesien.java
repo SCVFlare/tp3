@@ -23,7 +23,7 @@ public class ReseauBayesien {
     	}
     	int nbMatchConnu=0;
     	int nbMatchInterrogation=0;
-        for(int i=0;i<100000;i++) {
+        for(int i=0;i<1000000;i++) {
         	List<VariableBool> values = new ArrayList<VariableBool>(variables.values());
         	//Collection<VariableBool> values= ;
         	Collections.sort(values);
