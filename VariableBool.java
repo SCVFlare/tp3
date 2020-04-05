@@ -33,13 +33,15 @@ public class VariableBool implements Comparable<VariableBool>{
      */
     protected double[]              tableProbabilites;
 
-
-
+    
+     
 	@Override
 	public String toString() {
-		return "evalue=" + evalue + ", value=" + value + ", nom=" + nom + ", dependances=" + dependances
-				+ ", tableProbabilites=" + Arrays.toString(tableProbabilites);
+		return "prof=" + profondeur + ", v=" + value + ", nom=" + nom
+				+ ", dependances=" + dependances + ", tableProbabilites=" + Arrays.toString(tableProbabilites);
 	}
+
+
 
 	@Override
 	public int compareTo(VariableBool o) {

@@ -3,13 +3,11 @@
    http://ericbeaudry.uqam.ca/INF4230/tp3/
 */
 import java.io.StreamTokenizer;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -20,11 +18,15 @@ public class ReseauBayesien {
     public double evaluerProbabilite(Requete requete)
     {
     	System.out.println(requete);
+    	for(Expression e:requete.connu) {
+    		variables.get(e.variable).evalue=e.valeurverite;
+    	}
     	int nbMatchConnu=0;
     	int nbMatchInterrogation=0;
-        for(int i=0;i<10;i++) {
-        	Collection<VariableBool> values= variables.values();
-        	Collections.sort((List<VariableBool>) values);
+        for(int i=0;i<100000;i++) {
+        	List<VariableBool> values = new ArrayList<VariableBool>(variables.values());
+        	//Collection<VariableBool> values= ;
+        	Collections.sort(values);
         	for(VariableBool v: values) {
         		setEvalue(v,false);
         	}
@@ -40,6 +42,9 @@ public class ReseauBayesien {
         		}
         	}	
         }
+        for(VariableBool v: variables.values()) {
+    		setValue(v,false);
+    	}
         return (double)nbMatchInterrogation / (double)nbMatchConnu;
     }
     private void evaluerVariableBool(VariableBool v) {
@@ -62,7 +67,6 @@ public class ReseauBayesien {
     		double prob=v.tableProbabilites[i];
     		Random r = new Random();
     		double randomValue = r.nextDouble();
-    		System.out.println(prob);
     		setValue(v,randomValue<prob);
     		setEvalue(v,true);
     	}
@@ -101,23 +105,26 @@ public class ReseauBayesien {
     }
     
     protected Map<String, VariableBool>  variables = new TreeMap();
+    protected int res;
     
-    protected int getProfondeur() {
-    	Set<VariableBool> racines = new HashSet<VariableBool>();
-    	for(VariableBool v: variables.values()) {
+    
+    protected void getProfondeur() {
+    	/*for(VariableBool v: variables.values()) {
     		profondeurMax(v,0);
     	}
     	int m=0;
     	for(VariableBool v: variables.values()) {
     		m=Math.max(m, v.profondeur);
-    	}
-    	return m;
-    	/*for(VariableBool v: variables.values()) {
-    		profondeurRec(v,m);
     	}*/
+    	for(VariableBool v: variables.values()) {
+    		this.res=-1;
+    		profondeurRec(v,0);
+    		v.profondeur=res;
+    	}
+    	
     }
     
-    public void profondeurMax(VariableBool v,int max) {
+    /*public void profondeurMax(VariableBool v,int max) {
     	if(v.dependances.isEmpty()) {
     		v.profondeur=Math.max(v.profondeur, max);
     	}
@@ -127,20 +134,21 @@ public class ReseauBayesien {
     			profondeurMax(v1,1+max);
     		}
     	}
-    }
+    }*/
     
-    /*public void profondeurRec(VariableBool v,int profondeur) {
+    public void profondeurRec(VariableBool v,int prof) {
     	if(v.dependances.isEmpty()) {
-    		v.profondeur=pro;
+    		this.res=Math.max(this.res, prof);
     	}
     	else {
     		for(String s:v.dependances) {
     			VariableBool v1=variables.get(s);
-    			v1.profondeur=profondeur;
-    			profondeurRec(v,profondeur-1);
+    			profondeurRec(v1,prof+1);
     		}
     	}
-    }*/
+    }
+    
+    
 	public void setEvalue(VariableBool v, boolean evalue) {
 		try {
 			this.variables.get(v.nom).evalue=evalue;
